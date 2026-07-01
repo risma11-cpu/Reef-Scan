@@ -8,7 +8,6 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
 import onnxruntime as ort
-from sqlalchemy import create_engine
 
 # ====== KONFIGURASI ======
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,11 +26,17 @@ ALLOWED_EXT = {"png", "jpg", "jpeg", "webp"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
-CORS(app)  # Allow React frontend
+CORS(app)
 
 app.secret_key = "reefsc4n-s3cr3t-k3y-2026"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///" + os.path.join(BASE_DIR, "reefdb.sqlite3"))
+
+# ====== KONEKSI RAILWAY MySQL ======
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "mysql+pymysql://root:ylWtmUpUjyOoxxOXGIOpbBndPGAmNgYP@hayabusa.proxy.rlwy.net:36957/railway"
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -103,14 +108,12 @@ def get_user_from_request():
         return None
 
 # ====== API ROUTES ======
-
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username', '').strip()
     email = data.get('email', '').strip()
     password = data.get('password', '')
-
     if not username or not email or not password:
         return jsonify({'error': 'Semua kolom wajib diisi.'}), 400
     if len(username) < 3:
@@ -121,7 +124,6 @@ def register():
         return jsonify({'error': 'Username sudah digunakan.'}), 400
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email sudah terdaftar.'}), 400
-
     user = User(username=username, email=email, password=generate_password_hash(password))
     db.session.add(user)
     db.session.commit()
@@ -142,16 +144,13 @@ def analyze():
     user = get_user_from_request()
     if not user:
         return jsonify({'error': 'Unauthorized'}), 401
-
     file = request.files.get('image')
     if not file or not allowed_file(file.filename):
         return jsonify({'error': 'File tidak valid.'}), 400
-
     ext = file.filename.rsplit(".", 1)[1].lower()
     filename = f"{uuid.uuid4().hex}.{ext}"
     save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(save_path)
-
     try:
         prediction = predict(save_path)
         top = prediction[0]
@@ -181,6 +180,7 @@ def riwayat():
         'hasil_kelas_id': d.hasil_kelas_id,
         'confidence': d.confidence,
         'waktu': d.waktu.isoformat(),
+        'image_url': f'/static/uploads/{d.nama_file}',
     } for d in data])
 
 @app.route('/api/riwayat/<int:id>', methods=['DELETE'])
@@ -198,7 +198,11 @@ def hapus_riwayat(id):
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'})
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=False, host="0.0.0.0", port=5000)
