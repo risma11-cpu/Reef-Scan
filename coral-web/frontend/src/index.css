@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --ocean-deep: #020d18;
+  --ocean-mid: #031a2e;
+  --ocean-blue: #0a3d6b;
+  --ocean-light: #1565a8;
+  --coral-accent: #e8604c;
+  --coral-soft: #f4a58a;
+  --sand: #f0ece4;
+  --sand-dim: rgba(240, 236, 228, 0.7);
+  --glass: rgba(2, 20, 40, 0.55);
+  --glass-border: rgba(240, 236, 228, 0.12);
+  --healthy: #2ecc8f;
+  --bleached: #f4c74e;
+  --dead: #8fa0ab;
+  --algae: #4aab5f;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ocean-deep);
+  color: var(--sand);
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+::selection {
+  background: var(--coral-accent);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ocean-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ocean-blue);
+  border-radius: 3px;
+}
