@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Reef Scan — Login{% endblock %}
+
+{% block extra_style %}
+<style>
+  .auth-wrap{
+    max-width:420px; margin:0 auto; padding-top:24px;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--coral-soft); font-weight:600; margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:""; width:7px; height:7px; border-radius:50%;
+    background:var(--coral); display:inline-block;
+    box-shadow:0 0 0 4px rgba(255,107,91,0.18);
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:clamp(1.7rem, 4vw, 2.2rem);
+    line-height:1.1; margin:0 0 6px;
+  }
+  h1 em{ font-style:italic; font-weight:500; color:var(--coral-soft); }
+  .sub{ font-size:0.9rem; color:rgba(244,236,216,0.55); margin:0 0 28px; }
+
+  .card{
+    background:rgba(244,236,216,0.045);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:28px 24px;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.5);
+  }
+
+  .field{ margin-bottom:18px; }
+  .field label{
+    display:block; font-size:0.82rem; font-weight:600;
+    color:rgba(244,236,216,0.7); margin-bottom:7px; letter-spacing:0.03em;
+  }
+  .field input{
+    width:100%; padding:12px 16px;
+    background:rgba(244,236,216,0.07);
+    border:1px solid rgba(244,236,216,0.15);
+    border-radius:12px;
+    color:var(--sand); font-size:0.95rem;
+    font-family:'Inter',sans-serif;
+    outline:none; transition:border-color .2s, background .2s;
+    box-sizing:border-box;
+  }
+  .field input:focus{
+    border-color:var(--coral-soft);
+    background:rgba(244,236,216,0.10);
+  }
+  .field input::placeholder{ color:rgba(244,236,216,0.3); }
+
+  .btn-submit{
+    width:100%; padding:14px;
+    border:none; border-radius:14px;
+    background:linear-gradient(135deg, var(--coral), #ff8a73);
+    color:#1a0c08; font-size:1rem; font-weight:700;
+    font-family:'Inter',sans-serif; cursor:pointer;
+    transition:transform .15s, box-shadow .2s;
+    box-shadow:0 10px 24px -8px rgba(255,107,91,0.5);
+    margin-top:6px;
+  }
+  .btn-submit:hover{ transform:translateY(-2px); box-shadow:0 14px 30px -8px rgba(255,107,91,0.6); }
+  .btn-submit:active{ transform:translateY(0); }
+
+  .error-box{
+    background:rgba(255,107,91,0.12);
+    border:1px solid rgba(255,107,91,0.4);
+    padding:12px 15px; border-radius:12px;
+    font-size:0.86rem; margin-bottom:18px;
+    display:flex; gap:8px; align-items:center;
+  }
+  .success-box{
+    background:rgba(61,220,151,0.12);
+    border:1px solid rgba(61,220,151,0.4);
+    padding:12px 15px; border-radius:12px;
+    font-size:0.86rem; margin-bottom:18px;
+    display:flex; gap:8px; align-items:center;
+  }
+
+  .divider{
+    text-align:center; margin:20px 0 0;
+    font-size:0.84rem; color:rgba(244,236,216,0.45);
+  }
+  .divider a{
+    color:var(--coral-soft); font-weight:600;
+    transition:color .2s;
+  }
+  .divider a:hover{ color:var(--coral); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="eyebrow">Reef Scan · Masuk Akun</div>
+  <h1>Halo,<br><em>selamat datang kembali.</em></h1>
+  <p class="sub">Login untuk mulai menganalisis dan menyimpan riwayat prediksimu.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      {% if category == 'success' %}
+        <div class="success-box">✅ {{ message }}</div>
+      {% elif category == 'error' %}
+        <div class="error-box">⚠️ {{ message }}</div>
+      {% endif %}
+    {% endfor %}
+  {% endwith %}
+
+  <div class="card">
+    {% if error %}
+      <div class="error-box">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username"
+               value="{{ username or '' }}"
+               placeholder="Masukkan username" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               placeholder="Masukkan password" required>
+      </div>
+      <button type="submit" class="btn-submit">Masuk →</button>
+    </form>
+  </div>
+
+  <div class="divider">
+    Belum punya akun? <a href="{{ url_for('register') }}">Daftar sekarang</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Reef Scan — Riwayat Analisis{% endblock %}
+
+{% block extra_style %}
+<style>
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--coral-soft); font-weight:600; margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:""; width:7px; height:7px; border-radius:50%;
+    background:var(--coral); display:inline-block;
+    box-shadow:0 0 0 4px rgba(255,107,91,0.18);
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:clamp(1.8rem, 4.5vw, 2.4rem);
+    line-height:1.1; margin:0 0 6px;
+  }
+  h1 em{ font-style:italic; font-weight:500; color:var(--coral-soft); }
+  .sub{ font-size:0.9rem; color:rgba(244,236,216,0.55); margin:0 0 32px; }
+
+  /* Stats bar */
+  .stats-row{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;
+    margin-bottom:32px;
+  }
+  @media(max-width:560px){ .stats-row{ grid-template-columns:repeat(2,1fr); } }
+  .stat-card{
+    background:rgba(244,236,216,0.045);
+    border:1px solid var(--line);
+    border-radius:16px; padding:16px;
+    text-align:center;
+  }
+  .stat-card .stat-num{
+    font-family:'Fraunces',serif; font-size:1.8rem; font-weight:600;
+    display:block; margin-bottom:4px;
+  }
+  .stat-card .stat-label{
+    font-size:0.76rem; color:rgba(244,236,216,0.5); font-weight:600;
+    text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .stat-card.healthy .stat-num{ color:var(--healthy); }
+  .stat-card.bleached .stat-num{ color:var(--bleached); }
+  .stat-card.dead .stat-num{ color:var(--dead); }
+  .stat-card.algae .stat-num{ color:var(--algae); }
+
+  /* Empty state */
+  .empty{
+    text-align:center; padding:60px 20px;
+    background:rgba(244,236,216,0.03);
+    border:1px solid var(--line); border-radius:22px;
+  }
+  .empty svg{ width:54px; height:54px; margin:0 auto 16px; display:block; opacity:0.5; }
+  .empty p{ color:rgba(244,236,216,0.45); font-size:0.9rem; margin:0 0 20px; }
+  .empty a{
+    display:inline-flex; align-items:center; gap:8px;
+    background:linear-gradient(135deg, var(--coral), #ff8a73);
+    color:#1a0c08; font-weight:700; font-size:0.9rem;
+    padding:11px 22px; border-radius:999px;
+    transition:transform .15s;
+  }
+  .empty a:hover{ transform:translateY(-2px); }
+
+  /* Riwayat list */
+  .riwayat-list{ display:flex; flex-direction:column; gap:14px; }
+  .riwayat-card{
+    background:rgba(244,236,216,0.045);
+    border:1px solid var(--line);
+    border-radius:18px; overflow:hidden;
+    display:grid; grid-template-columns:90px 1fr auto;
+    gap:0; align-items:stretch;
+    transition:border-color .2s;
+  }
+  .riwayat-card:hover{ border-color:rgba(244,236,216,0.25); }
+  @media(max-width:560px){
+    .riwayat-card{ grid-template-columns:70px 1fr auto; }
+  }
+
+  .riwayat-img{
+    width:90px; height:90px; object-fit:cover; display:block; flex-shrink:0;
+  }
+  @media(max-width:560px){ .riwayat-img{ width:70px; height:70px; } }
+
+  .riwayat-info{
+    padding:14px 16px; display:flex; flex-direction:column; justify-content:center; gap:6px;
+  }
+  .riwayat-kelas{
+    display:inline-flex; align-items:center; gap:7px;
+    font-weight:700; font-size:1rem;
+  }
+  .dot{
+    width:8px; height:8px; border-radius:50%; flex-shrink:0;
+  }
+  .dot.Healthy{ background:var(--healthy); }
+  .dot.Bleached{ background:var(--bleached); }
+  .dot.Dead{ background:var(--dead); }
+  .dot.Algae{ background:var(--algae); }
+
+  .riwayat-conf{
+    font-size:0.82rem; color:rgba(244,236,216,0.5);
+  }
+  .riwayat-waktu{
+    font-size:0.78rem; color:rgba(244,236,216,0.35);
+  }
+
+  .riwayat-action{
+    padding:14px 16px; display:flex; align-items:center;
+  }
+  .btn-hapus{
+    background:rgba(255,107,91,0.12);
+    border:1px solid rgba(255,107,91,0.25);
+    color:var(--coral-soft); font-size:0.78rem; font-weight:600;
+    padding:7px 13px; border-radius:10px; cursor:pointer;
+    transition:background .2s, border-color .2s;
+    text-decoration:none; display:inline-block;
+    font-family:'Inter',sans-serif;
+  }
+  .btn-hapus:hover{
+    background:rgba(255,107,91,0.22);
+    border-color:rgba(255,107,91,0.5);
+    color:var(--coral);
+  }
+
+  .flash-info{
+    background:rgba(61,220,151,0.10);
+    border:1px solid rgba(61,220,151,0.3);
+    padding:11px 15px; border-radius:12px;
+    font-size:0.86rem; margin-bottom:20px;
+    display:flex; gap:8px; align-items:center;
+  }
+  .flash-error{
+    background:rgba(255,107,91,0.12);
+    border:1px solid rgba(255,107,91,0.4);
+    padding:11px 15px; border-radius:12px;
+    font-size:0.86rem; margin-bottom:20px;
+    display:flex; gap:8px; align-items:center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="eyebrow">Reef Scan · Riwayat</div>
+  <h1>Riwayat<br><em>analisismu.</em></h1>
+  <p class="sub">Semua hasil analisis yang pernah kamu lakukan tersimpan di sini.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      {% if category == 'info' %}
+        <div class="flash-info">✅ {{ message }}</div>
+      {% elif category == 'error' %}
+        <div class="flash-error">⚠️ {{ message }}</div>
+      {% endif %}
+    {% endfor %}
+  {% endwith %}
+
+  {% if data %}
+    <!-- Stats -->
+    {% set total = data|length %}
+    {% set healthy_count = data|selectattr('hasil_kelas','equalto','Healthy')|list|length %}
+    {% set bleached_count = data|selectattr('hasil_kelas','equalto','Bleached')|list|length %}
+    {% set dead_count = data|selectattr('hasil_kelas','equalto','Dead')|list|length %}
+    {% set algae_count = data|selectattr('hasil_kelas','equalto','Algae')|list|length %}
+
+    <div class="stats-row">
+      <div class="stat-card healthy">
+        <span class="stat-num">{{ healthy_count }}</span>
+        <span class="stat-label">Sehat</span>
+      </div>
+      <div class="stat-card bleached">
+        <span class="stat-num">{{ bleached_count }}</span>
+        <span class="stat-label">Memutih</span>
+      </div>
+      <div class="stat-card dead">
+        <span class="stat-num">{{ dead_count }}</span>
+        <span class="stat-label">Mati</span>
+      </div>
+      <div class="stat-card algae">
+        <span class="stat-num">{{ algae_count }}</span>
+        <span class="stat-label">Berlumut</span>
+      </div>
+    </div>
+
+    <div class="riwayat-list">
+      {% for item in data %}
+        <div class="riwayat-card">
+          <img class="riwayat-img"
+               src="{{ url_for('static', filename='uploads/' + item.nama_file) }}"
+               alt="Foto karang"
+               onerror="this.src='{{ url_for('static', filename='uploads/placeholder.png') }}'">
+          <div class="riwayat-info">
+            <div class="riwayat-kelas">
+              <span class="dot {{ item.hasil_kelas }}"></span>
+              {{ item.hasil_kelas_id }} ({{ item.hasil_kelas }})
+            </div>
+            <div class="riwayat-conf">Keyakinan: {{ "%.1f"|format(item.confidence) }}%</div>
+            <div class="riwayat-waktu">{{ item.waktu.strftime('%d %b %Y, %H:%M') }}</div>
+          </div>
+          <div class="riwayat-action">
+            <a href="{{ url_for('hapus_riwayat', id=item.id) }}"
+               class="btn-hapus"
+               onclick="return confirm('Hapus riwayat ini?')">Hapus</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="empty">
+      <svg viewBox="0 0 64 64" fill="none">
+        <path d="M32 52V36" stroke="#ff6b5b" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+        <path d="M32 36C32 36 18 34 18 20C18 12 24 8 28 12C30 8 36 8 36 14C40 10 46 14 44 22C42 30 32 36 32 36Z" fill="#ff8a73" opacity="0.4"/>
+        <circle cx="32" cy="56" r="3" fill="#ff6b5b" opacity="0.3"/>
+      </svg>
+      <p>Kamu belum pernah melakukan analisis.<br>Yuk mulai analisis foto terumbu karangmu!</p>
+      <a href="{{ url_for('analyze') }}">Analisis sekarang →</a>
+    </div>
+  {% endif %}
+
+{% endblock %}

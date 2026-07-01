@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Reef Scan — Analisis Gambar{% endblock %}
+
+{% block extra_style %}
+<style>
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--coral-soft); font-weight:600; margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:""; width:7px; height:7px; border-radius:50%;
+    background:var(--coral); display:inline-block;
+    box-shadow:0 0 0 4px rgba(255,107,91,0.18);
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:clamp(1.8rem, 4.5vw, 2.5rem);
+    line-height:1.1; margin:0 0 14px; letter-spacing:-0.01em;
+  }
+  h1 em{ font-style:italic; font-weight:500; color:var(--coral-soft); }
+  .lede{ font-size:1.02rem; line-height:1.6; color:rgba(244,236,216,0.72); max-width:520px; margin:0; }
+
+  .panel{
+    background:rgba(244,236,216,0.045);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:8px;
+    margin-top:32px;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.5);
+  }
+  .panel-inner{
+    border:1.5px dashed rgba(244,236,216,0.28);
+    border-radius:18px;
+    padding:36px 28px;
+    text-align:center;
+    transition:border-color .25s, background .25s;
+    position:relative;
+    overflow:hidden;
+  }
+  .panel-inner.has-file{ border-color:var(--healthy); }
+  .panel-inner:hover{ border-color:var(--coral-soft); background:rgba(255,107,91,0.04); }
+
+  .float-fish{ position:absolute; opacity:0.35; animation:bob 4s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce){ .float-fish{ animation:none; } }
+
+  .coral-icon{ width:54px; height:54px; margin:0 auto 14px; display:block; }
+  .drop-label{ font-size:1.02rem; font-weight:600; margin-bottom:4px; }
+  .drop-sub{ font-size:0.84rem; color:rgba(244,236,216,0.55); margin-bottom:18px; }
+
+  input[type="file"]{ display:none; }
+  .file-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(244,236,216,0.08);
+    border:1px solid var(--line);
+    color:var(--sand);
+    padding:10px 20px;
+    border-radius:999px;
+    font-size:0.88rem; font-weight:600;
+    cursor:pointer;
+    transition:background .2s, border-color .2s;
+  }
+  .file-btn:hover{ background:rgba(244,236,216,0.14); border-color:var(--coral-soft); }
+  .file-name{ display:block; margin-top:14px; font-size:0.84rem; color:var(--healthy); font-weight:600; }
+
+  .submit-btn{
+    width:100%; margin-top:18px; padding:15px;
+    border:none; border-radius:14px;
+    background:linear-gradient(135deg, var(--coral), #ff8a73);
+    color:#1a0c08; font-size:1rem; font-weight:700;
+    font-family:'Inter',sans-serif; cursor:pointer; letter-spacing:0.01em;
+    transition:transform .15s, box-shadow .2s;
+    box-shadow:0 10px 24px -8px rgba(255,107,91,0.5);
+  }
+  .submit-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 30px -8px rgba(255,107,91,0.6); }
+  .submit-btn:active{ transform:translateY(0); }
+
+  .error{
+    margin-top:18px;
+    background:rgba(255,107,91,0.12);
+    border:1px solid rgba(255,107,91,0.4);
+    padding:13px 16px; border-radius:12px; font-size:0.88rem;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+
+  .result{ margin-top:44px; animation:fadeUp .5s ease both; }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .result-head{
+    display:flex; align-items:center; gap:8px;
+    font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:rgba(244,236,216,0.5); font-weight:600; margin-bottom:16px;
+  }
+  .result-head::after{ content:""; flex:1; height:1px; background:var(--line); }
+
+  .result-grid{ display:grid; grid-template-columns:200px 1fr; gap:28px; align-items:center; }
+  @media (max-width:560px){ .result-grid{ grid-template-columns:1fr; } }
+
+  .photo-frame{ border-radius:18px; overflow:hidden; border:1px solid var(--line); aspect-ratio:1/1; }
+  .photo-frame img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .gauge-wrap{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .gauge{ position:relative; width:140px; height:140px; }
+  .gauge svg{ transform:rotate(-90deg); }
+  .gauge-bg{ fill:none; stroke:rgba(244,236,216,0.1); stroke-width:10; }
+  .gauge-fg{ fill:none; stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1); }
+  .gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .gauge-pct{ font-family:'Fraunces',serif; font-size:1.7rem; font-weight:600; }
+  .gauge-label{ font-size:0.86rem; font-weight:700; margin-top:2px; }
+
+  .breakdown{ display:flex; flex-direction:column; gap:13px; }
+  .bar-row{ display:grid; grid-template-columns:84px 1fr 46px; align-items:center; gap:12px; font-size:0.85rem; }
+  .bar-track{ height:8px; border-radius:6px; background:rgba(244,236,216,0.1); overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:6px; width:0; transition:width 0.9s cubic-bezier(.2,.8,.2,1); }
+  .bar-pct{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .Healthy .gauge-fg, .Healthy .bar-fill{ stroke:var(--healthy); background:var(--healthy); }
+  .Bleached .gauge-fg, .Bleached .bar-fill{ stroke:var(--bleached); background:var(--bleached); }
+  .Dead .gauge-fg, .Dead .bar-fill{ stroke:var(--dead); background:var(--dead); }
+  .Algae .gauge-fg, .Algae .bar-fill{ stroke:var(--algae); background:var(--algae); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="eyebrow">Reef Scan · Klasifikasi Visual</div>
+  <h1>Apa kabar karang<br><em>di foto ini?</em></h1>
+  <p class="lede">Unggah satu foto, dan model akan membaca kondisinya: sehat, memutih, mati, atau ditumbuhi alga — lengkap dengan tingkat keyakinan untuk tiap kemungkinan.</p>
+
+  <form method="POST" enctype="multipart/form-data" id="reef-form">
+    <div class="panel">
+      <div class="panel-inner" id="drop-zone">
+        <svg class="float-fish" style="top:14px; left:18px; width:20px;" viewBox="0 0 34 20"><path d="M0 10C8 0 24 0 30 6L34 2V18L30 14C24 20 8 20 0 10Z" fill="#3ddc97"/></svg>
+        <svg class="float-fish" style="top:20px; right:20px; width:16px; animation-delay:1.5s;" viewBox="0 0 34 20"><path d="M0 10C8 0 24 0 30 6L34 2V18L30 14C24 20 8 20 0 10Z" fill="#f2c14e"/></svg>
+        <svg class="coral-icon" viewBox="0 0 64 64" fill="none">
+          <path d="M32 58V36" stroke="#ff6b5b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M32 36C32 36 18 34 18 20C18 12 24 8 28 12C30 8 36 8 36 14C40 10 46 14 44 22C42 30 32 36 32 36Z" fill="#ff8a73" opacity="0.9"/>
+          <path d="M20 40C14 40 10 34 14 28" stroke="#ffb199" stroke-width="3" stroke-linecap="round"/>
+          <path d="M44 40C50 40 54 34 50 28" stroke="#ffb199" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="32" cy="58" rx="14" ry="3" fill="#ffb199" opacity="0.4"/>
+        </svg>
+        <div class="drop-label">Pilih foto karang</div>
+        <div class="drop-sub">Format PNG, JPG, JPEG, atau WEBP</div>
+        <label class="file-btn" for="image-input">📁 Cari di komputer</label>
+        <input type="file" name="image" id="image-input" accept="image/*" required>
+        <span class="file-name" id="file-name"></span>
+      </div>
+    </div>
+    <button type="submit" class="submit-btn">Analisis Gambar →</button>
+  </form>
+
+  {% if error %}
+    <div class="error">⚠️ <span>{{ error }}</span></div>
+  {% endif %}
+
+  {% if prediction %}
+    {% set top = prediction[0] %}
+    {% set circumference = 2 * 3.14159 * 60 %}
+    <div class="result">
+      <div class="result-head">Hasil Analisis</div>
+      <div class="result-grid">
+        <div class="photo-frame">
+          <img src="{{ image_url }}" alt="Foto karang yang diupload">
+        </div>
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+          <div class="gauge-wrap {{ top.label }}">
+            <div class="gauge">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle class="gauge-bg" cx="70" cy="70" r="60"/>
+                <circle class="gauge-fg" cx="70" cy="70" r="60"
+                  stroke-dasharray="{{ circumference }}"
+                  stroke-dashoffset="{{ circumference * (1 - top.prob/100) }}"/>
+              </svg>
+              <div class="gauge-center">
+                <div class="gauge-pct">{{ "%.0f"|format(top.prob) }}%</div>
+                <div class="gauge-label">{{ top.label_id }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="breakdown" style="flex:1; min-width:220px;">
+            {% for p in prediction %}
+              <div class="bar-row {{ p.label }}">
+                <span>{{ p.label_id }}</span>
+                <div class="bar-track"><div class="bar-fill" data-w="{{ p.prob }}"></div></div>
+                <span class="bar-pct">{{ "%.1f"|format(p.prob) }}%</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const input = document.getElementById('image-input');
+  const fileName = document.getElementById('file-name');
+  const dropZone = document.getElementById('drop-zone');
+  input.addEventListener('change', () => {
+    if (input.files.length){
+      fileName.textContent = '✓ ' + input.files[0].name;
+      dropZone.classList.add('has-file');
+    }
+  });
+  document.querySelectorAll('.bar-fill').forEach(el => {
+    const w = el.getAttribute('data-w');
+    requestAnimationFrame(() => { el.style.width = w + '%'; });
+  });
+</script>
+{% endblock %}

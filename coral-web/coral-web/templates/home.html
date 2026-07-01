@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Reef Scan — Tentang Terumbu Karang{% endblock %}
+
+{% block extra_style %}
+<style>
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--coral-soft); font-weight:600; margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:""; width:7px; height:7px; border-radius:50%;
+    background:var(--coral); display:inline-block;
+    box-shadow:0 0 0 4px rgba(255,107,91,0.18);
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:clamp(2rem, 5vw, 2.85rem);
+    line-height:1.08; margin:0 0 16px; letter-spacing:-0.01em;
+  }
+  h1 em{ font-style:italic; font-weight:500; color:var(--coral-soft); }
+  .lede{ font-size:1.04rem; line-height:1.65; color:rgba(244,236,216,0.75); max-width:560px; margin:0 0 28px; }
+
+  .cta{
+    display:inline-flex; align-items:center; gap:8px;
+    background:linear-gradient(135deg, var(--coral), #ff8a73);
+    color:#1a0c08; font-weight:700; font-size:0.95rem;
+    padding:13px 24px; border-radius:999px;
+    box-shadow:0 10px 24px -8px rgba(255,107,91,0.5);
+    transition:transform .15s, box-shadow .2s;
+    margin-bottom:56px;
+  }
+  .cta:hover{ transform:translateY(-2px); box-shadow:0 14px 30px -8px rgba(255,107,91,0.6); }
+
+  .section-label{
+    font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:rgba(244,236,216,0.5); font-weight:600;
+    display:flex; align-items:center; gap:8px; margin-bottom:20px;
+  }
+  .section-label::after{ content:""; flex:1; height:1px; background:var(--line); }
+
+  .condition-grid{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
+    margin-bottom:56px;
+  }
+  @media (max-width:560px){ .condition-grid{ grid-template-columns:1fr; } }
+
+  .condition-card{
+    background:rgba(244,236,216,0.045);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .condition-card::before{
+    content:""; position:absolute; top:0; left:0; width:4px; height:100%;
+  }
+  .condition-card.healthy::before{ background:var(--healthy); }
+  .condition-card.bleached::before{ background:var(--bleached); }
+  .condition-card.dead::before{ background:var(--dead); }
+  .condition-card.algae::before{ background:var(--algae); }
+
+  .condition-card h3{
+    font-family:'Fraunces',serif; font-weight:600; font-size:1.1rem;
+    margin:0 0 8px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .condition-card h3 svg{ width:22px; height:22px; flex-shrink:0; }
+  .condition-card p{
+    font-size:0.86rem; line-height:1.55; color:rgba(244,236,216,0.65); margin:0;
+  }
+
+  .why-row{
+    display:grid; grid-template-columns:1fr 1fr; gap:24px;
+    margin-bottom:24px;
+  }
+  @media (max-width:560px){ .why-row{ grid-template-columns:1fr; } }
+  .why-item{
+    border-left:2px solid var(--line);
+    padding-left:18px;
+  }
+  .why-item .num{
+    font-family:'Fraunces',serif; font-size:1.6rem; color:var(--coral-soft);
+    display:block; margin-bottom:6px;
+  }
+  .why-item h4{ margin:0 0 6px; font-size:0.95rem; font-weight:700; }
+  .hero-scene{
+    position:relative;
+    height:260px;
+    margin:-8px 0 32px;
+    border-radius:24px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 500px 300px at 50% -20%, rgba(255,255,255,0.07), transparent 60%),
+      linear-gradient(180deg, #0a3447 0%, #0d4f5e 55%, #156870 100%);
+  }
+  .hero-scene svg{ position:absolute; bottom:0; width:100%; }
+  .fish{ position:absolute; animation:swim linear infinite; }
+  @keyframes swim{
+    0%{ transform:translateX(-60px) translateY(0); }
+    50%{ transform:translateX(calc(100vw)) translateY(-14px); }
+    100%{ transform:translateX(calc(100vw + 60px)) translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){ .fish{ animation:none; } }
+</style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="eyebrow">Reef Scan · Edukasi</div>
+  <h1>Terumbu karang menopang<br><em>jauh lebih dari yang terlihat.</em></h1>
+  <p class="lede">
+    Terumbu karang hanya menutupi sebagian kecil dasar laut, tetapi menjadi rumah bagi sekitar
+    seperempat seluruh kehidupan laut, melindungi garis pantai dari ombak, dan menopang
+    perikanan serta pariwisata jutaan orang. Kondisinya berubah cepat — dan kamera bisa
+    membantu memantaunya.
+  </p>
+  <div class="hero-scene">
+    <svg viewBox="0 0 800 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- caustic light -->
+      <path d="M0 0 L800 0 L800 80 L0 40 Z" fill="rgba(255,255,255,0.04)"/>
+      <!-- back coral silhouettes -->
+      <g opacity="0.5" fill="#0a5f6e">
+        <path d="M40 260V190C40 190 18 186 18 158C18 138 32 130 40 138C44 128 58 128 58 144C66 134 80 144 74 162C70 178 40 190 40 190Z"/>
+        <path d="M700 260V180C700 180 678 175 678 145C678 122 696 113 706 123C710 110 728 112 726 130C736 118 752 130 744 150C738 168 700 180 700 180Z"/>
+      </g>
+      <!-- mid coral -->
+      <g fill="#ff6b5b" opacity="0.85">
+        <path d="M140 260V200C140 200 116 197 116 172C116 152 132 145 140 153C144 142 158 142 158 158C168 148 182 158 176 176C172 192 140 200 140 200Z"/>
+        <path d="M610 260V210C610 210 590 207 590 186C590 169 604 163 611 170C614 161 626 161 626 174C634 166 646 174 641 189C638 202 610 210 610 210Z"/>
+        <path d="M380 260V215C380 215 362 212 362 194C362 180 374 175 380 181C383 174 393 174 393 185C400 178 410 185 406 197C403 207 380 215 380 215Z"/>
+      </g>
+      <!-- front kelp/anemone -->
+      <g stroke="#ffb199" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7">
+        <path d="M250 260 Q246 230 256 210 Q266 230 260 260"/>
+        <path d="M270 260 Q272 222 284 200 Q292 226 280 260"/>
+        <path d="M500 260 Q496 225 508 202 Q518 228 510 260"/>
+        <path d="M524 260 Q528 230 540 212 Q546 236 536 260"/>
+      </g>
+      <!-- sandy floor -->
+      <path d="M0 250 Q200 240 400 252 T800 248 V260 H0 Z" fill="#04141c"/>
+    </svg>
+    <div class="fish" style="top:60px; animation-duration:22s; animation-delay:0s;">
+      <svg width="34" height="20" viewBox="0 0 34 20"><path d="M0 10C8 0 24 0 30 6L34 2V18L30 14C24 20 8 20 0 10Z" fill="#f2c14e" opacity="0.85"/></svg>
+    </div>
+    <div class="fish" style="top:120px; animation-duration:30s; animation-delay:6s;">
+      <svg width="22" height="13" viewBox="0 0 34 20"><path d="M0 10C8 0 24 0 30 6L34 2V18L30 14C24 20 8 20 0 10Z" fill="#3ddc97" opacity="0.7"/></svg>
+    </div>
+    <div class="fish" style="top:35px; animation-duration:26s; animation-delay:12s;">
+      <svg width="26" height="15" viewBox="0 0 34 20"><path d="M0 10C8 0 24 0 30 6L34 2V18L30 14C24 20 8 20 0 10Z" fill="#ffb199" opacity="0.75"/></svg>
+    </div>
+  </div>
+
+  <a href="{{ url_for('analyze') }}" class="cta">Mulai analisis foto karang →</a>
+
+  <div class="section-label">Empat kondisi yang dikenali model</div>
+  <div class="condition-grid">
+    <div class="condition-card healthy">
+      <h3><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#3ddc97" opacity="0.25"/><circle cx="12" cy="12" r="5" fill="#3ddc97"/></svg> Sehat</h3>
+      <p>Karang dengan jaringan dan pigmen warna utuh, tanda alga simbiosis (zooxanthellae) masih bekerja normal menyediakan energi bagi karang.</p>
+    </div>
+    <div class="condition-card bleached">
+      <h3><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#f2c14e" opacity="0.25"/><circle cx="12" cy="12" r="5" fill="#f2c14e"/></svg> Memutih</h3>
+      <p>Karang memutih karena melepaskan alga simbiosisnya, biasanya akibat stres suhu air yang meningkat. Karang masih hidup tapi rentan.</p>
+    </div>
+    <div class="condition-card dead">
+      <h3><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#9aa5ab" opacity="0.25"/><circle cx="12" cy="12" r="5" fill="#9aa5ab"/></svg> Mati</h3>
+      <p>Jaringan karang sudah tidak ada, menyisakan rangka kalsium karbonat yang sering ditumbuhi organisme lain atau sedimen.</p>
+    </div>
+    <div class="condition-card algae">
+      <h3><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#5fae6c" opacity="0.25"/><circle cx="12" cy="12" r="5" fill="#5fae6c"/></svg> Berlumut</h3>
+      <p>Permukaan karang didominasi pertumbuhan alga berlebih, sering menjadi tanda penurunan kualitas air atau berkurangnya populasi herbivora laut.</p>
+    </div>
+  </div>
+
+  <div class="section-label">Mengapa pemantauan ini penting</div>
+  <div class="why-row">
+    <div class="why-item">
+      <span class="num">01</span>
+      <h4>Pemutihan terjadi cepat</h4>
+      <p>Kenaikan suhu air laut 1–2°C saja sudah cukup memicu pemutihan massal dalam hitungan minggu.</p>
+    </div>
+    <div class="why-item">
+      <span class="num">02</span>
+      <h4>Pemantauan manual mahal</h4>
+      <p>Survei menyelam langsung butuh waktu, tenaga ahli, dan biaya besar untuk mencakup area luas.</p>
+    </div>
+  </div>
+  <div class="why-row">
+    <div class="why-item">
+      <span class="num">03</span>
+      <h4>Klasifikasi gambar membantu</h4>
+      <p>Foto dari penyelam, drone bawah air, atau kamera tetap bisa langsung dianalisis tanpa keahlian khusus.</p>
+    </div>
+    <div class="why-item">
+      <span class="num">04</span>
+      <h4>Data lebih cepat, respons lebih cepat</h4>
+      <p>Mendeteksi perubahan kondisi lebih awal memungkinkan tindakan konservasi diambil lebih cepat.</p>
+    </div>
+  </div>
+
+{% endblock %}
