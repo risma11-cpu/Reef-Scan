@@ -32,9 +32,11 @@ app.secret_key = "reefsc4n-s3cr3t-k3y-2026"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # ====== KONEKSI RAILWAY MySQL ======
+import os
+
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    DATABASE_URL = os.environ.get("DATABASE_URL", "mysql+pymysql://root:@localhost:3306/reefdb")
+    "mysql+pymysql://root:@localhost:3306/reefdb"
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
