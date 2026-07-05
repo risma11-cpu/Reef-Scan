@@ -1,16 +1,59 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './navbar.css'
+
+const NAV_ITEMS = [
+  { to: '/', label: 'Beranda' },
+  { to: '/analyze', label: 'Analisis' },
+]
 
 const Navbar = ({ user, logout, dark = false }) => {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const navRef = useRef(null)
 
   const closeMenu = () => setMenuOpen(false)
 
+  // Klik di luar navbar -> tutup menu
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        closeMenu()
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Escape key -> tutup menu
+  useEffect(() => {
+    const handleEsc = (e) => e.key === 'Escape' && closeMenu()
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [])
+
+  // Lock scroll body saat menu mobile terbuka
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
+
+  // Auto-close kalau layar dibesarkan ke desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) closeMenu()
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Tutup menu tiap ganti halaman
+  useEffect(() => { closeMenu() }, [location.pathname])
+
   return (
     <motion.nav
+      ref={navRef}
       className={`navbar ${dark ? 'navbar-dark' : ''}`}
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -27,83 +70,66 @@ const Navbar = ({ user, logout, dark = false }) => {
       {/* Hamburger */}
       <button
         className="hamburger"
-        onClick={() => setMenuOpen(!menuOpen)}
+        onClick={() => setMenuOpen((prev) => !prev)}
+        aria-expanded={menuOpen}
+        aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
       >
-        {menuOpen ? "✕" : "☰"}
+        {menuOpen ? '✕' : '☰'}
       </button>
 
-      {/* Menu */}
-      <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
-
-        <ul className="nav-links">
-          <li>
+      {/* Nav Links */}
+      <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
+        {NAV_ITEMS.map(({ to, label }) => (
+          <li key={to}>
             <Link
-              to="/"
-              className={location.pathname === '/' ? 'active' : ''}
+              to={to}
+              className={location.pathname === to ? 'active' : ''}
+              aria-current={location.pathname === to ? 'page' : undefined}
               onClick={closeMenu}
             >
-              Beranda
+              {label}
             </Link>
           </li>
-
+        ))}
+        {user && (
           <li>
             <Link
-              to="/analyze"
-              className={location.pathname === '/analyze' ? 'active' : ''}
+              to="/riwayat"
+              className={location.pathname === '/riwayat' ? 'active' : ''}
+              aria-current={location.pathname === '/riwayat' ? 'page' : undefined}
               onClick={closeMenu}
             >
-              Analisis
+              Riwayat
             </Link>
           </li>
+        )}
+      </ul>
 
-          {user && (
-            <li>
-              <Link
-                to="/riwayat"
-                className={location.pathname === '/riwayat' ? 'active' : ''}
-                onClick={closeMenu}
-              >
-                Riwayat
-              </Link>
-            </li>
-          )}
-        </ul>
-
-        <div className="nav-right">
-          {user ? (
-            <>
-              <span className="nav-username">👤 {user.username}</span>
-              <button
-                className="btn-nav btn-outline"
-                onClick={() => {
-                  logout()
-                  closeMenu()
-                }}
-              >
-                Keluar
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="btn-nav btn-outline"
-                onClick={closeMenu}
-              >
-                Masuk
-              </Link>
-
-              <Link
-                to="/register"
-                className="btn-nav btn-filled"
-                onClick={closeMenu}
-              >
-                Daftar
-              </Link>
-            </>
-          )}
-        </div>
-
+      {/* Right side (auth) */}
+      <div className={`nav-right ${menuOpen ? 'open' : ''}`}>
+        {user ? (
+          <>
+            <span className="nav-username">👤 {user.username}</span>
+            <button
+              className="btn-nav btn-outline"
+              onClick={() => {
+                logout()
+                closeMenu()
+              }}
+            >
+              Keluar
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="btn-nav btn-outline" onClick={closeMenu}>
+              Masuk
+            </Link>
+            <Link to="/register" className="btn-nav btn-filled" onClick={closeMenu}>
+              Daftar
+            </Link>
+          </>
+        )}
       </div>
     </motion.nav>
   )
