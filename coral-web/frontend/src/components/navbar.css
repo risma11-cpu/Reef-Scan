@@ -37,6 +37,16 @@
   letter-spacing: 0.05em;
 }
 
+/* Wrapper: menyatukan nav-links + nav-right jadi satu flex row di desktop,
+   dan satu kolom tunggal di mobile (lihat media query). */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
+  margin-left: 60px;
+}
+
 /* Nav links (desktop default) */
 .nav-links {
   display: flex;
@@ -146,9 +156,11 @@
     z-index: 1002;
   }
 
-  /* Wrapper tunggal: nav-links & nav-right otomatis nyambung,
-     gak perlu hitung top secara manual lagi */
+  /* Reset perilaku desktop dari .nav-menu */
   .nav-menu {
+    margin-left: 0;
+    justify-content: flex-start;
+
     position: fixed;
     top: 72px;
     left: 0;
