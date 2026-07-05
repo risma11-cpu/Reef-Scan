@@ -31,14 +31,14 @@ CORS(app)
 app.secret_key = "reefsc4n-s3cr3t-k3y-2026"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# ====== KONEKSI RAILWAY MySQL ======
+# ====== SQLITE DATABASE ======
 import os
 
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "mysql+pymysql://root:@localhost:3306/reefdb"
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app.config["SQLALCHEMY_DATABASE_URI"] = \
+    "sqlite:///" + os.path.join(basedir, "reefdb.sqlite3")
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
