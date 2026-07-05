@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import axios from 'axios'
-import './Auth.css'
+import './auth.css'
 
 const Login = ({ onLogin }) => {
   const [form, setForm] = useState({ username: '', password: '' })
