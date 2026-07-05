@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import './Navbar.css'
+import './navbar.css'
 
 const Navbar = ({ user, logout, dark = false }) => {
   const location = useLocation()
