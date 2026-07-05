@@ -18,9 +18,9 @@ const Riwayat = ({ user, logout }) => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/riwayat', {
-        headers: { Authorization: `Bearer ${user?.token || ''}` }
-      })
+     const res = await axios.get('https://cimaiiyah.pythonanywhere.com/api/riwayat', {
+  headers: { Authorization: `Bearer ${user?.token || ''}` }
+})
       setData(res.data)
     } catch (err) {
       console.error(err)
