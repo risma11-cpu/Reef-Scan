@@ -5,6 +5,7 @@ import './navbar.css'
 
 const Navbar = ({ user, logout, dark = false }) => {
   const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <motion.nav
@@ -19,8 +20,13 @@ const Navbar = ({ user, logout, dark = false }) => {
           <span className="brand-name">Reef Scan</span>
         </Link>
       </div>
-
-      <ul className="nav-links">
+<button
+  className="hamburger"
+  onClick={() => setMenuOpen(!menuOpen)}
+>
+  ☰
+</button>
+      <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
         <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Beranda</Link></li>
         <li><Link to="/analyze" className={location.pathname === '/analyze' ? 'active' : ''}>Analisis</Link></li>
         {user && <li><Link to="/riwayat" className={location.pathname === '/riwayat' ? 'active' : ''}>Riwayat</Link></li>}
