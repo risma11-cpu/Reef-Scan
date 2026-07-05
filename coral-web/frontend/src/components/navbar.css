@@ -18,6 +18,7 @@
   background: rgba(2, 13, 24, 0.7);
 }
 
+/* Brand */
 .nav-brand a {
   display: flex;
   align-items: center;
@@ -36,6 +37,7 @@
   letter-spacing: 0.05em;
 }
 
+/* Nav links (desktop default) */
 .nav-links {
   display: flex;
   list-style: none;
@@ -73,6 +75,7 @@
   width: 100%;
 }
 
+/* Right side (auth area) */
 .nav-right {
   display: flex;
   align-items: center;
@@ -116,6 +119,8 @@
   background: #d44f3d;
   transform: translateY(-1px);
 }
+
+/* Hamburger */
 .hamburger {
   display: none;
   background: transparent;
@@ -123,9 +128,11 @@
   color: var(--sand);
   font-size: 1.8rem;
   cursor: pointer;
+  line-height: 1;
 }
-@media (max-width: 768px) {
 
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
   .navbar {
     padding: 0 20px;
   }
@@ -139,39 +146,40 @@
     z-index: 1002;
   }
 
-  .nav-links {
-    position: absolute;
+  /* Wrapper tunggal: nav-links & nav-right otomatis nyambung,
+     gak perlu hitung top secara manual lagi */
+  .nav-menu {
+    position: fixed;
     top: 72px;
     left: 0;
     width: 100%;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
     background: rgba(2, 13, 24, 0.96);
     backdrop-filter: blur(20px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+
+  .nav-menu .nav-links {
     flex-direction: column;
     align-items: center;
     gap: 24px;
     padding: 30px 0;
-
-    display: none;
+    width: 100%;
   }
 
-  .nav-links.open {
-    display: flex;
+  .nav-menu .nav-right {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 0 0 30px;
+    width: 100%;
   }
-.nav-right {
-  display: none;
-  position: absolute;
-  top: 290px;
-  left: 0;
-  width: 100%;
-  justify-content: center;
-  gap: 15px;
-  background: rgba(2,13,24,.96);
-  padding-bottom: 25px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-}
-
-.nav-right.open{
-  display:flex;
-}
-
 }
