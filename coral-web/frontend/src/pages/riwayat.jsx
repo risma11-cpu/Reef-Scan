@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import axios from 'axios'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar'
 import './riwayat.css'
 
 const CLASS_COLORS = {
