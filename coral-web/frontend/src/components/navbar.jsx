@@ -7,6 +7,8 @@ const Navbar = ({ user, logout, dark = false }) => {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
 
+  const closeMenu = () => setMenuOpen(false)
+
   return (
     <motion.nav
       className={`navbar ${dark ? 'navbar-dark' : ''}`}
@@ -14,43 +16,95 @@ const Navbar = ({ user, logout, dark = false }) => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: 'easeOut' }}
     >
+      {/* Logo */}
       <div className="nav-brand">
-        <Link to="/">
+        <Link to="/" onClick={closeMenu}>
           <span className="brand-icon">🪸</span>
           <span className="brand-name">Reef Scan</span>
         </Link>
       </div>
-<button
-  className="hamburger"
-  onClick={() => setMenuOpen(!menuOpen)}
->
-  ☰
-</button>
-      <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
-        <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Beranda</Link></li>
-        <li><Link to="/analyze" className={location.pathname === '/analyze' ? 'active' : ''}>Analisis</Link></li>
-        {user && <li><Link to="/riwayat" className={location.pathname === '/riwayat' ? 'active' : ''}>Riwayat</Link></li>}
-      </ul>
 
-      <div className={`nav-right ${menuOpen ? 'open' : ''}`}>
-  {user ? (
-    <>
-      <span className="nav-username">👤 {user.username}</span>
-      <button className="btn-nav btn-outline" onClick={logout}>
-        Keluar
+      {/* Hamburger */}
+      <button
+        className="hamburger"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        {menuOpen ? "✕" : "☰"}
       </button>
-    </>
-  ) : (
-    <>
-      <Link to="/login" className="btn-nav btn-outline">
-        Masuk
-      </Link>
-      <Link to="/register" className="btn-nav btn-filled">
-        Daftar
-      </Link>
-    </>
-  )}
-</div>
+
+      {/* Menu */}
+      <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
+
+        <ul className="nav-links">
+          <li>
+            <Link
+              to="/"
+              className={location.pathname === '/' ? 'active' : ''}
+              onClick={closeMenu}
+            >
+              Beranda
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              to="/analyze"
+              className={location.pathname === '/analyze' ? 'active' : ''}
+              onClick={closeMenu}
+            >
+              Analisis
+            </Link>
+          </li>
+
+          {user && (
+            <li>
+              <Link
+                to="/riwayat"
+                className={location.pathname === '/riwayat' ? 'active' : ''}
+                onClick={closeMenu}
+              >
+                Riwayat
+              </Link>
+            </li>
+          )}
+        </ul>
+
+        <div className="nav-right">
+          {user ? (
+            <>
+              <span className="nav-username">👤 {user.username}</span>
+              <button
+                className="btn-nav btn-outline"
+                onClick={() => {
+                  logout()
+                  closeMenu()
+                }}
+              >
+                Keluar
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="btn-nav btn-outline"
+                onClick={closeMenu}
+              >
+                Masuk
+              </Link>
+
+              <Link
+                to="/register"
+                className="btn-nav btn-filled"
+                onClick={closeMenu}
+              >
+                Daftar
+              </Link>
+            </>
+          )}
+        </div>
+
+      </div>
     </motion.nav>
   )
 }
