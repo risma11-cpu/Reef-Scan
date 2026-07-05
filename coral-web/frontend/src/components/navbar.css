@@ -157,9 +157,21 @@
   .nav-links.open {
     display: flex;
   }
+.nav-right {
+  display: none;
+  position: absolute;
+  top: 290px;
+  left: 0;
+  width: 100%;
+  justify-content: center;
+  gap: 15px;
+  background: rgba(2,13,24,.96);
+  padding-bottom: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
 
-  .nav-right {
-    display: none;
-  }
+.nav-right.open{
+  display:flex;
+}
 
 }
