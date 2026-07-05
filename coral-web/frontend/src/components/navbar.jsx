@@ -32,19 +32,25 @@ const Navbar = ({ user, logout, dark = false }) => {
         {user && <li><Link to="/riwayat" className={location.pathname === '/riwayat' ? 'active' : ''}>Riwayat</Link></li>}
       </ul>
 
-      <div className="nav-right">
-        {user ? (
-          <>
-            <span className="nav-username">👤 {user.username}</span>
-            <button className="btn-nav btn-outline" onClick={logout}>Keluar</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="btn-nav btn-outline">Masuk</Link>
-            <Link to="/register" className="btn-nav btn-filled">Daftar</Link>
-          </>
-        )}
-      </div>
+      <div className={`nav-right ${menuOpen ? 'open' : ''}`}>
+  {user ? (
+    <>
+      <span className="nav-username">👤 {user.username}</span>
+      <button className="btn-nav btn-outline" onClick={logout}>
+        Keluar
+      </button>
+    </>
+  ) : (
+    <>
+      <Link to="/login" className="btn-nav btn-outline">
+        Masuk
+      </Link>
+      <Link to="/register" className="btn-nav btn-filled">
+        Daftar
+      </Link>
+    </>
+  )}
+</div>
     </motion.nav>
   )
 }
