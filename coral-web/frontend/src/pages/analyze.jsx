@@ -39,10 +39,13 @@ const Analyze = ({ user, logout }) => {
     const formData = new FormData()
     formData.append('image', file)
     try {
-      const token = user?.token || ''
-      const res = await axios.post('http://localhost:5000/api/analyze', formData, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
-      })
+    const token = user?.token || ''
+const res = await axios.post('http://localhost:5000/api/analyze', formData, {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+    Authorization: `Bearer ${token}`
+  }
+})
       setResult(res.data)
     } catch (err) {
       setError(err.response?.data?.error || 'Gagal memproses gambar.')
