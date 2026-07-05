@@ -26,6 +26,18 @@ const Home = ({ user, logout }) => {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       // Animasi parallax untuk video background
+// if (heroBgRef.current) {
+//   gsap.to(heroBgRef.current, {
+//     yPercent: 25,
+//     ease: 'none',
+//     scrollTrigger: {
+//       trigger: heroRef.current.querySelector('.hero-section'),
+//       start: 'top top',
+//       end: 'bottom top',
+//       scrub: true,
+//     },
+//   })
+// }
       if (heroBgRef.current) {
         gsap.to(heroBgRef.current, {
           yPercent: 25,
