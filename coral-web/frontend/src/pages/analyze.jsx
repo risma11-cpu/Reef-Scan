@@ -40,7 +40,7 @@ const Analyze = ({ user, logout }) => {
     formData.append('image', file)
     try {
     const token = user?.token || ''
-const res = await axios.post('http://localhost:5000/api/analyze', formData, {
+const res = await axios.post('https://cimaiiyah.pythonanywhere.com/api/analyze', formData, {
   headers: {
     'Content-Type': 'multipart/form-data',
     Authorization: `Bearer ${token}`
