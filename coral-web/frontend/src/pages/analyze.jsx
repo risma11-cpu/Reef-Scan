@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import Navbar from '../components/Navbar'
-import './Analyze.css'
+import './analyze.css'
 
 const CLASS_COLORS = {
   Healthy: '#2ecc8f',
