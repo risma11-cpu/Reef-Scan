@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import Home from './pages/Home'
-import Analyze from './pages/Analyze'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Riwayat from './pages/Riwayat'
+import Home from './pages/home'
+import Analyze from './pages/analyze'
+import Login from './pages/login'
+import Register from './pages/register'
+import Riwayat from './pages/riwayat'
 import './App.css'
 
 function App() {
