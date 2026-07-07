@@ -32,8 +32,6 @@ app.secret_key = "reefsc4n-s3cr3t-k3y-2026"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # ====== SQLITE DATABASE ======
-import os
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app.config["SQLALCHEMY_DATABASE_URI"] = \
@@ -62,6 +60,10 @@ class Prediksi(db.Model):
     hasil_kelas_id = db.Column(db.String(50), nullable=False)
     confidence = db.Column(db.Float, nullable=False)
     waktu = db.Column(db.DateTime, default=datetime.utcnow)
+
+# ====== BUAT TABEL DI DATABASE (harus di luar __main__ biar jalan di WSGI/PythonAnywhere) ======
+with app.app_context():
+    db.create_all()
 
 # ====== LOAD MODEL ONNX ======
 session_onnx = ort.InferenceSession(MODEL_PATH, providers=["CPUExecutionProvider"])
@@ -203,10 +205,10 @@ def hapus_riwayat(id):
 @app.route('/health')
 def health():
     return jsonify({'status': 'ok'})
+
 @app.route("/api/users")
 def all_users():
     users = User.query.all()
-
     return jsonify([
         {
             "id": u.id,
@@ -216,10 +218,10 @@ def all_users():
         }
         for u in users
     ])
-    @app.route("/api/prediksi-all")
+
+@app.route("/api/prediksi-all")
 def all_prediksi():
     data = Prediksi.query.all()
-
     return jsonify([
         {
             "id": p.id,
@@ -232,6 +234,4 @@ def all_prediksi():
     ])
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
     app.run(debug=False, host="0.0.0.0", port=5000)
