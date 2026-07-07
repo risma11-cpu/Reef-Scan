@@ -203,6 +203,33 @@ def hapus_riwayat(id):
 @app.route('/health')
 def health():
     return jsonify({'status': 'ok'})
+@app.route("/api/users")
+def all_users():
+    users = User.query.all()
+
+    return jsonify([
+        {
+            "id": u.id,
+            "username": u.username,
+            "email": u.email,
+            "created_at": u.created_at.isoformat()
+        }
+        for u in users
+    ])
+    @app.route("/api/prediksi-all")
+def all_prediksi():
+    data = Prediksi.query.all()
+
+    return jsonify([
+        {
+            "id": p.id,
+            "user": p.user.username,
+            "hasil": p.hasil_kelas_id,
+            "confidence": p.confidence,
+            "waktu": p.waktu.isoformat()
+        }
+        for p in data
+    ])
 
 if __name__ == "__main__":
     with app.app_context():
