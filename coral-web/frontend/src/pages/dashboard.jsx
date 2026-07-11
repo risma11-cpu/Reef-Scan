@@ -208,9 +208,12 @@ export default function Dashboard({ logout }) {
   const filteredUsers = users.filter((u) =>
     `${u.username ?? u.nama ?? ""} ${u.email ?? ""}`.toLowerCase().includes(userSearch.toLowerCase())
   );
-  const filteredPreds = predictions.filter((p) =>
-    `${p.user ?? p.username ?? ""} ${p.hasil ?? p.kelas ?? ""}`.toLowerCase().includes(predSearch.toLowerCase())
-  );
+  const filteredPreds = predictions.filter((p) => {
+    const key = normalizeClass(p.hasil ?? p.kelas ?? p.prediksi ?? p.result);
+    const label = CLASS_STYLES[key].label;
+    const haystack = `${p.user ?? p.username ?? ""} ${label} ${p.hasil ?? p.kelas ?? p.prediksi ?? p.result ?? ""}`;
+    return haystack.toLowerCase().includes(predSearch.toLowerCase());
+  });
   const userPage = useTablePagination(filteredUsers, 7);
   const predPage = useTablePagination(filteredPreds, 7);
 
