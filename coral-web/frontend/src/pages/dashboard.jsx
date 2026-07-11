@@ -15,6 +15,8 @@ import {
 import {
   BarChart,
   Bar,
+  PieChart,
+  Pie,
   Cell,
   XAxis,
   YAxis,
@@ -40,29 +42,6 @@ function normalizeClass(raw) {
   if (k.includes("dead") || k.includes("mati")) return "dead";
   if (k.includes("algae") || k.includes("lumut")) return "algae";
   return "healthy";
-}
-
-function CoralLogo({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M12 21V13M12 13C12 13 8 12.5 8 8.5C8 6 9.5 5 11 5.5C11 5.5 10 3 12 3C14 3 13 5.5 13 5.5C14.5 5 16 6 16 8.5C16 12.5 12 13 12 13Z"
-        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-      />
-      <path
-        d="M7.5 13C7.5 13 5 12.5 5 9.5C5 7.5 6.2 7 7.2 7.5"
-        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-      />
-      <path
-        d="M16.5 13C16.5 13 19 12.5 19 9.5C19 7.5 17.8 7 16.8 7.5"
-        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-      />
-      <path
-        d="M4 21C4 21 4.5 17.5 8 17.5C10 17.5 10.5 19 12 19C13.5 19 14 17.5 16 17.5C19.5 17.5 20 21 20 21"
-        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-      />
-    </svg>
-  );
 }
 
 function StatCard({ icon: Icon, label, value, accent }) {
@@ -162,6 +141,63 @@ function formatDate(value) {
   });
 }
 
+function DonutChart({ data, total }) {
+  return (
+    <div className="donut-wrap">
+      <div className="donut-chart">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="jumlah"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              innerRadius="68%"
+              outerRadius="100%"
+              paddingAngle={total ? 3 : 0}
+              cornerRadius={6}
+              stroke="none"
+            >
+              {data.map((entry, i) => (
+                <Cell key={i} fill={entry.jumlah > 0 ? entry.fill : "#1c2b3d"} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                background: "#0d1826",
+                border: "1px solid #1c2b3d",
+                borderRadius: 10,
+                color: "#e2e8f0",
+                fontSize: 13,
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="donut-center">
+          <span className="donut-total">{total}</span>
+          <span className="donut-total-label">Total Prediksi</span>
+        </div>
+      </div>
+
+      <div className="donut-legend">
+        {data.map((entry) => {
+          const pct = total ? ((entry.jumlah / total) * 100).toFixed(1) : "0.0";
+          return (
+            <div key={entry.name} className="donut-legend-item">
+              <span className="donut-dot" style={{ background: entry.fill }} />
+              <span className="donut-legend-name">{entry.name}</span>
+              <span className="donut-legend-value">
+                {entry.jumlah} <span className="donut-legend-pct">· {pct}%</span>
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 const AUTH_TOKEN_KEY = "reef_admin_token";
 
 function PasswordGate({ onSuccess }) {
@@ -194,7 +230,7 @@ function PasswordGate({ onSuccess }) {
     <div className="gate-wrap">
       <div className="gate-card">
         <div className="gate-logo">
-          <CoralLogo size={26} />
+          <span style={{ fontSize: 26 }}>🪸</span>
         </div>
         <h1 className="gate-title">REEF SCAN</h1>
         <p className="gate-subtitle">Berikan password untuk mengakses data admin</p>
@@ -470,7 +506,7 @@ function DashboardContent({ onUnauthorized }) {
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <CoralLogo size={18} />
+            <span style={{ fontSize: 18 }}>🪸</span>
           </div>
           <div>
             <p className="sidebar-title">REEF SCAN</p>
@@ -528,7 +564,7 @@ function DashboardContent({ onUnauthorized }) {
           )}
 
           <div className="data-source-note">
-            <CoralLogo size={14} />
+            <span style={{ fontSize: 14 }}>🪸</span>
             Data diambil langsung dari database <strong>SQLite</strong> melalui <strong>REST API</strong> (Flask, PythonAnywhere) — bukan data statis/dummy.
           </div>
 
@@ -544,7 +580,10 @@ function DashboardContent({ onUnauthorized }) {
                 <StatCard icon={Circle} label="Algae" value={classCounts.algae} accent="green" />
               </div>
 
-              <SectionCard title="Distribusi Hasil Klasifikasi">{chart(280)}</SectionCard>
+              <SectionCard title="Proporsi Hasil Klasifikasi">
+                <DonutChart data={chartData} total={predictions.length} />
+              </SectionCard>
+
               <SectionCard title="Pengguna Terbaru">{usersTable(5)}</SectionCard>
               <SectionCard title="Prediksi Terbaru">{predTable(5)}</SectionCard>
             </div>
@@ -575,7 +614,12 @@ function DashboardContent({ onUnauthorized }) {
           {/* ===== STATISTIK ===== */}
           {activeMenu === "statistik" && (
             <div className="stack">
-              <SectionCard title="Distribusi Hasil Klasifikasi">{chart(360)}</SectionCard>
+              <SectionCard title="Proporsi Klasifikasi">
+                <DonutChart data={chartData} total={predictions.length} />
+              </SectionCard>
+
+              <SectionCard title="Distribusi Hasil Klasifikasi">{chart(300)}</SectionCard>
+
               <div className="stat-mini-grid">
                 {Object.entries(classCounts).map(([key, count]) => {
                   const style = CLASS_STYLES[key];
