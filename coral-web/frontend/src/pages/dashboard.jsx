@@ -500,7 +500,7 @@ function DashboardContent({ onUnauthorized }) {
 
           <div className="data-source-note">
             <CoralLogo size={14} />
-            Data diambil langsung dari database <strong>SQLite</strong> melalui <strong>REST API</strong> (Flask, PythonAnywhere) — bukan data statis/dummy.
+            Data diambil langsung dari database <strong>SQLite</strong> melalui <strong>REST API</strong> (Flask, PythonAnywhere)
           </div>
 
           {/* ===== DASHBOARD ===== */}
