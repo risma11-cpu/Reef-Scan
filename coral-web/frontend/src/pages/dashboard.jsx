@@ -149,6 +149,19 @@ function SectionCard({ title, action, children }) {
   );
 }
 
+function formatDate(value) {
+  if (!value) return "-";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "-";
+  return d.toLocaleString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 const AUTH_TOKEN_KEY = "reef_admin_token";
 
 function PasswordGate({ onSuccess }) {
@@ -303,10 +316,26 @@ function DashboardContent({ onUnauthorized }) {
     { name: "Algae", jumlah: classCounts.algae, fill: CLASS_STYLES.algae.bar },
   ];
 
-  const filteredUsers = users.filter((u) =>
+  const sortedPredictions = useMemo(() => {
+    return [...predictions].sort((a, b) => {
+      const dateA = new Date(a.waktu ?? a.tanggal ?? a.created_at ?? 0);
+      const dateB = new Date(b.waktu ?? b.tanggal ?? b.created_at ?? 0);
+      return dateB - dateA;
+    });
+  }, [predictions]);
+
+  const sortedUsers = useMemo(() => {
+    return [...users].sort((a, b) => {
+      const dateA = new Date(a.created_at ?? a.tanggal_registrasi ?? 0);
+      const dateB = new Date(b.created_at ?? b.tanggal_registrasi ?? 0);
+      return dateB - dateA;
+    });
+  }, [users]);
+
+  const filteredUsers = sortedUsers.filter((u) =>
     `${u.username ?? u.nama ?? ""} ${u.email ?? ""}`.toLowerCase().includes(userSearch.toLowerCase())
   );
-  const filteredPreds = predictions.filter((p) => {
+  const filteredPreds = sortedPredictions.filter((p) => {
     const key = normalizeClass(p.hasil ?? p.kelas ?? p.prediksi ?? p.result);
     const label = CLASS_STYLES[key].label;
     const haystack = `${p.user ?? p.username ?? ""} ${label} ${p.hasil ?? p.kelas ?? p.prediksi ?? p.result ?? ""}`;
@@ -360,7 +389,7 @@ function DashboardContent({ onUnauthorized }) {
                   <td className="cell-id">#{u.id}</td>
                   <td className="cell-strong">{u.username ?? u.nama}</td>
                   <td>{u.email}</td>
-                  <td>{u.tanggal_registrasi ?? u.created_at ?? "-"}</td>
+                  <td>{formatDate(u.created_at ?? u.tanggal_registrasi)}</td>
                 </tr>
               ))
             )}
@@ -400,7 +429,7 @@ function DashboardContent({ onUnauthorized }) {
                     <td className="cell-strong">{p.user ?? p.username ?? "-"}</td>
                     <td><span className={style.badgeClass}>{style.label}</span></td>
                     <td><ProgressBar value={conf <= 1 ? conf * 100 : conf} /></td>
-                    <td>{p.tanggal ?? p.created_at ?? "-"}</td>
+                    <td>{formatDate(p.waktu ?? p.tanggal ?? p.created_at)}</td>
                   </tr>
                 );
               })
@@ -500,7 +529,7 @@ function DashboardContent({ onUnauthorized }) {
 
           <div className="data-source-note">
             <CoralLogo size={14} />
-            Data diambil langsung dari database <strong>SQLite</strong> melalui <strong>REST API</strong> (Flask, PythonAnywhere)
+            Data diambil langsung dari database <strong>SQLite</strong> melalui <strong>REST API</strong> (Flask, PythonAnywhere) — bukan data statis/dummy.
           </div>
 
           {/* ===== DASHBOARD ===== */}
