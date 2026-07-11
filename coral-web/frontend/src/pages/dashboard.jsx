@@ -5,12 +5,12 @@ import {
   Users,
   Waves,
   BarChart3,
-  LogOut,
   Search,
   ChevronLeft,
   ChevronRight,
   Circle,
   RefreshCw,
+  Lock,
 } from "lucide-react";
 import {
   BarChart,
@@ -40,6 +40,29 @@ function normalizeClass(raw) {
   if (k.includes("dead") || k.includes("mati")) return "dead";
   if (k.includes("algae") || k.includes("lumut")) return "algae";
   return "healthy";
+}
+
+function CoralLogo({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M12 21V13M12 13C12 13 8 12.5 8 8.5C8 6 9.5 5 11 5.5C11 5.5 10 3 12 3C14 3 13 5.5 13 5.5C14.5 5 16 6 16 8.5C16 12.5 12 13 12 13Z"
+        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      />
+      <path
+        d="M7.5 13C7.5 13 5 12.5 5 9.5C5 7.5 6.2 7 7.2 7.5"
+        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      />
+      <path
+        d="M16.5 13C16.5 13 19 12.5 19 9.5C19 7.5 17.8 7 16.8 7.5"
+        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      />
+      <path
+        d="M4 21C4 21 4.5 17.5 8 17.5C10 17.5 10.5 19 12 19C13.5 19 14 17.5 16 17.5C19.5 17.5 20 21 20 21"
+        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 function StatCard({ icon: Icon, label, value, accent }) {
@@ -126,7 +149,75 @@ function SectionCard({ title, action, children }) {
   );
 }
 
-export default function Dashboard({ logout }) {
+const AUTH_TOKEN_KEY = "reef_admin_token";
+
+function PasswordGate({ onSuccess }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      const res = await axios.post(`${API_BASE}/api/admin/login`, { password });
+      const token = res.data?.token;
+      if (!token) throw new Error("no-token");
+      sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+      onSuccess();
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError("Password salah. Coba lagi.");
+      } else {
+        setError("Gagal menghubungi server. Periksa koneksi backend.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="gate-wrap">
+      <div className="gate-card">
+        <div className="gate-logo">
+          <CoralLogo size={26} />
+        </div>
+        <h1 className="gate-title">REEF SCAN</h1>
+        <p className="gate-subtitle">Berikan password untuk mengakses data admin</p>
+
+        <form onSubmit={handleSubmit} className="gate-form">
+          <div className="gate-input-wrap">
+            <Lock size={15} />
+            <input
+              type="password"
+              autoFocus
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Masukkan password"
+            />
+          </div>
+          {error && <p className="gate-error">{error}</p>}
+          <button type="submit" className="gate-submit" disabled={submitting}>
+            {submitting ? "Memeriksa..." : "Masuk"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const [authed, setAuthed] = useState(() => Boolean(sessionStorage.getItem(AUTH_TOKEN_KEY)));
+
+  if (!authed) {
+    return <PasswordGate onSuccess={() => setAuthed(true)} />;
+  }
+
+  return <DashboardContent onUnauthorized={() => setAuthed(false)} />;
+}
+
+function DashboardContent({ onUnauthorized }) {
   const [activeMenu, setActiveMenu] = useState("dashboard");
   const [users, setUsers] = useState([]);
   const [predictions, setPredictions] = useState([]);
@@ -149,10 +240,12 @@ export default function Dashboard({ logout }) {
   const fetchData = useCallback(async (mountedRef) => {
     setLoading(true);
     setError(null);
+    const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+    const headers = { "X-Admin-Token": token };
     try {
       const [usersRes, predRes] = await Promise.all([
-        axios.get(`${API_BASE}/api/users`),
-        axios.get(`${API_BASE}/api/prediksi-all`),
+        axios.get(`${API_BASE}/api/users`, { headers }),
+        axios.get(`${API_BASE}/api/prediksi-all`, { headers }),
       ]);
       if (!mountedRef.current) return;
       setUsers(Array.isArray(usersRes.data) ? usersRes.data : usersRes.data?.data ?? []);
@@ -160,6 +253,11 @@ export default function Dashboard({ logout }) {
       setLastUpdated(new Date());
     } catch (err) {
       if (!mountedRef.current) return;
+      if (err.response?.status === 401) {
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        onUnauthorized?.();
+        return;
+      }
       setError(
         `Gagal mengambil data dari server. ${
           err.response ? `Status ${err.response.status}.` : "Periksa koneksi atau status backend."
@@ -168,7 +266,7 @@ export default function Dashboard({ logout }) {
     } finally {
       if (mountedRef.current) setLoading(false);
     }
-  }, []);
+  }, [onUnauthorized]);
 
   useEffect(() => {
     const mountedRef = { current: true };
@@ -343,7 +441,7 @@ export default function Dashboard({ logout }) {
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <Waves size={18} />
+            <CoralLogo size={18} />
           </div>
           <div>
             <p className="sidebar-title">REEF SCAN</p>
@@ -367,13 +465,6 @@ export default function Dashboard({ logout }) {
             );
           })}
         </nav>
-
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={logout}>
-            <LogOut size={16} />
-            <span>Logout</span>
-          </button>
-        </div>
       </aside>
 
       {/* CONTENT */}
@@ -406,6 +497,11 @@ export default function Dashboard({ logout }) {
           {lastUpdated && !error && (
             <p className="last-updated">Terakhir diperbarui {lastUpdated.toLocaleTimeString("id-ID")}</p>
           )}
+
+          <div className="data-source-note">
+            <CoralLogo size={14} />
+            Data diambil langsung dari database <strong>SQLite</strong> melalui <strong>REST API</strong> (Flask, PythonAnywhere) — bukan data statis/dummy.
+          </div>
 
           {/* ===== DASHBOARD ===== */}
           {activeMenu === "dashboard" && (
