@@ -524,3 +524,129 @@
   .nav-item, .logout-btn { justify-content: center; }
   .content-inner { padding: 20px; }
 }
+
+/* ===== Password Gate ===== */
+.gate-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background: #050b14;
+  padding: 20px;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.gate-card {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  border: 1px solid #1c2b3d;
+  background: #0d1826;
+  border-radius: 18px;
+  padding: 36px 28px;
+}
+
+.gate-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  margin-bottom: 16px;
+}
+
+.gate-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0;
+}
+
+.gate-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 8px 0 24px;
+}
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gate-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid #1c2b3d;
+  background: #04101c;
+  border-radius: 10px;
+  color: #64748b;
+}
+
+.gate-input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #f1f5f9;
+}
+
+.gate-input-wrap input::placeholder {
+  color: #64748b;
+}
+
+.gate-error {
+  font-size: 12px;
+  color: #f87171;
+  margin: -4px 0 0;
+  text-align: left;
+}
+
+.gate-submit {
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  background: #38bdf8;
+  color: #04101c;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.gate-submit:hover {
+  background: #7dd3fc;
+}
+
+/* ===== Data source note ===== */
+.data-source-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  border: 1px solid #1c2b3d;
+  background: rgba(56, 189, 248, 0.06);
+  border-radius: 10px;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.data-source-note svg {
+  color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.data-source-note strong {
+  color: #cbd5e1;
+  font-weight: 600;
+}
