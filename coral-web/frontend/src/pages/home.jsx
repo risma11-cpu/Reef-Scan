@@ -181,7 +181,7 @@ const Home = ({ user, logout }) => {
 
       {/* KONDISI KARANG */}
       <section className="kondisi-section">
-        <div className="section-header">
+        <div className="section-header" style={{ maxWidth: '1100px', margin: '0 auto 64px' }}>
           <span className="section-eyebrow">4 Kelas yang Dikenali Model</span>
           <h2>Kondisi Terumbu Karang</h2>
           <p>Model YOLOv8 kami mampu mengklasifikasikan foto terumbu karang ke dalam empat kategori kondisi secara otomatis.</p>
