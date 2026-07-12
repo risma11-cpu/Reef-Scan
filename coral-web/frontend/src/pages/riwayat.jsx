@@ -112,7 +112,6 @@ const Riwayat = ({ user, logout }) => {
                   <div className="riwayat-conf">Keyakinan: {item.confidence.toFixed(1)}%</div>
                   <div className="riwayat-waktu">{new Date(item.waktu).toLocaleString('id-ID')}</div>
                 </div>
-                <button className="btn-hapus" onClick={() => hapus(item.id)}>Hapus</button>
               </motion.div>
             ))}
           </div>
