@@ -34,7 +34,7 @@ const Riwayat = ({ user, logout }) => {
   const hapus = async (id) => {
     if (!confirm('Hapus riwayat ini?')) return
     try {
-      await axios.delete(`http://localhost:5000/api/riwayat/${id}`, {
+      await axios.delete(`https://cimaiiyah.pythonanywhere.com/api/riwayat/${id}`, {
         headers: { Authorization: `Bearer ${user?.token || ''}` }
       })
       setData(prev => prev.filter(d => d.id !== id))
