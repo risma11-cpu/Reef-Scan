@@ -172,13 +172,14 @@
 }
 
 .section-eyebrow {
-  display: inline-block;
+  display: block;
   font-size: 0.72rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--coral-soft);
   font-weight: 600;
   margin-bottom: 16px;
+  text-align: center;
 }
 
 .section-header h2 {
