@@ -130,9 +130,14 @@ function SectionCard({ title, action, children }) {
 
 function formatDate(value) {
   if (!value) return "-";
-  const d = new Date(value);
+  let iso = String(value);
+  if (!iso.endsWith("Z") && !/[+-]\d{2}:\d{2}$/.test(iso)) {
+    iso += "Z";
+  }
+  const d = new Date(iso);
   if (isNaN(d.getTime())) return "-";
   return d.toLocaleString("id-ID", {
+    timeZone: "Asia/Jakarta",
     day: "numeric",
     month: "short",
     year: "numeric",
