@@ -99,7 +99,7 @@ const Riwayat = ({ user, logout }) => {
                 transition={{ duration: 0.4, delay: i * 0.06 }}
               >
                 <img
-                  src={`http://localhost:5000/static/uploads/${item.nama_file}`}
+                  src={`https://cimaiiyah.pythonanywhere.com/static/uploads/${item.nama_file}`}
                   alt="karang"
                   className="riwayat-img"
                   onError={e => e.target.src = ''}
