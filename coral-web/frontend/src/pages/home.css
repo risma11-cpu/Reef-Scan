@@ -397,23 +397,19 @@
   .hero-section {
     min-height: 560px;
   }
-
   .hero-big-title {
     font-size: clamp(32px, 12vw, 56px);
   }
-
   .hero-sub {
     margin: 0 auto 24px;
     font-size: 0.92rem;
     line-height: 1.6;
   }
-
   .hero-actions-center {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
-
   .btn-hero-primary,
   .btn-hero-outline,
   .btn-cta {
@@ -421,21 +417,24 @@
     justify-content: center;
     padding: 14px 20px;
   }
-
   .kondisi-grid {
     grid-template-columns: 1fr;
   }
-
   .kondisi-card {
     padding: 28px 18px;
   }
-
   .cta-section {
     padding: 60px 20px;
   }
-
   .footer-container {
     padding: 0 18px;
+  }
+  .section-header {
+    padding: 0 20px;
+  }
+  .section-eyebrow {
+    display: block;
+    text-align: center;
   }
 }
 
